@@ -97,6 +97,7 @@ fn day1b() {
     println!("{final_num}");
 }
 
+#[allow(dead_code)]
 fn day2a() {
     use std::{fs::File, io::Read};
     // Sample Input:
@@ -171,6 +172,54 @@ fn day2a() {
     println!("{sum}");
 }
 
-fn main() {
-    day2a();
+#[allow(dead_code)]
+fn day2b() {
+    use std::cmp::max;
+    use std::{fs::File, io::Read};
+    // Sample Input:
+    // Game ID: set 1; set 2; ...
+    //
+    // Bag loaded with: 12 red, 13 green, 14 blue
+    // Give the sum of ID
+    //
+    // When is each game possible?
+    // When the max number of balls of any color shown were present in the bag initially
+    // Which means the max of each balls from all sets
+    //
+    // Given, power = product of that max
+    // Solution sum of all powers
+
+    let mut input = String::new();
+    let _ = File::open("inputs/2.txt")
+        .unwrap()
+        .read_to_string(&mut input);
+
+    let mut sum = 0;
+    for game in input.trim().split('\n') {
+        // Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
+        let (_, part2) = game.trim().split_once(':').unwrap();
+
+        let mut max_r = 0;
+        let mut max_g = 0;
+        let mut max_b = 0;
+
+        for sets in part2.trim().split(';') {
+            // 6 red, 1 blue, 3 green
+            for balls in sets.trim().split(',') {
+                // 6 red
+                // 1 blue ....
+                let (num, ball_color) = balls.trim().split_once(' ').unwrap();
+                match ball_color {
+                    "red" => max_r = max(max_r, num.parse::<u64>().unwrap()),
+                    "green" => max_g = max(max_g, num.parse::<u64>().unwrap()),
+                    "blue" => max_b = max(max_b, num.parse::<u64>().unwrap()),
+                    _ => unreachable!(),
+                }
+            }
+        }
+        sum = sum + (max_r * max_g * max_b);
+    }
+    println!("{sum}");
 }
+
+fn main() {}
