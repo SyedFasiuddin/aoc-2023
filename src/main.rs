@@ -57,15 +57,15 @@ fn day1b() {
     let rx = Regex::new(r"one|two|three|four|five|six|seven|eight|nine").unwrap();
     while let Some(mat) = rx.find(&str) {
         str = match mat.as_str() {
-            "one"   => rx.replace(&str, "1e").to_string(),
-            "two"   => rx.replace(&str, "2o").to_string(),
+            "one" => rx.replace(&str, "1e").to_string(),
+            "two" => rx.replace(&str, "2o").to_string(),
             "three" => rx.replace(&str, "3e").to_string(),
-            "four"  => rx.replace(&str, "4r").to_string(),
-            "five"  => rx.replace(&str, "5e").to_string(),
-            "six"   => rx.replace(&str, "6x").to_string(),
+            "four" => rx.replace(&str, "4r").to_string(),
+            "five" => rx.replace(&str, "5e").to_string(),
+            "six" => rx.replace(&str, "6x").to_string(),
             "seven" => rx.replace(&str, "7n").to_string(),
             "eight" => rx.replace(&str, "8t").to_string(),
-            "nine"  => rx.replace(&str, "9e").to_string(),
+            "nine" => rx.replace(&str, "9e").to_string(),
             // Because two digits can be combined as such 'oneight'
             // Thanks reddit
             _ => unreachable!(),
