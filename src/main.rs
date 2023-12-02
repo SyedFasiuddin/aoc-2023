@@ -34,6 +34,7 @@ fn day1a() {
     println!("{final_num}");
 }
 
+#[allow(dead_code)]
 fn day1b() {
     use regex::Regex;
     use std::{fs::File, io::Read};
@@ -96,6 +97,80 @@ fn day1b() {
     println!("{final_num}");
 }
 
+fn day2a() {
+    use std::{fs::File, io::Read};
+    // Sample Input:
+    // Game ID: set 1; set 2; ...
+    //
+    // Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+    // Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+    // Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+    // Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+    // Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
+    //
+    // Bag loaded with: 12 red, 13 green, 14 blue
+    // Give the sum of ID
+    //
+    // Game 3 is impossible as there are only 12 red balls in bag but he showed 20
+    // Similarly Game 5 4 is impossible due to 15 blue balls
+    // So 1 2 5 are possible and 1 + 2 + 5 = 8 is the answer
+
+    // let input = r"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+    // Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+    // Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+    // Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+    // Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green";
+
+    let mut input = String::new();
+    let _ = File::open("inputs/2.txt")
+        .unwrap()
+        .read_to_string(&mut input);
+
+    let max_red = 12;
+    let max_green = 13;
+    let max_blue = 14;
+
+    let mut sum = 0;
+    for game in input.trim().split('\n') {
+        let mut good_set = true;
+        // Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
+        let (part1, part2) = game.trim().split_once(':').unwrap();
+        let id: u64 = part1[5..].parse().unwrap();
+
+        for sets in part2.trim().split(';') {
+            // 6 red, 1 blue, 3 green
+            for balls in sets.trim().split(',') {
+                // 6 red
+                // 1 blue ....
+                let (num, ball_color) = balls.trim().split_once(' ').unwrap();
+                match ball_color {
+                    "red" => {
+                        if num.parse::<u64>().unwrap() > max_red {
+                            good_set = false;
+                        }
+                    }
+                    "green" => {
+                        if num.parse::<u64>().unwrap() > max_green {
+                            good_set = false;
+                        }
+                    }
+                    "blue" => {
+                        if num.parse::<u64>().unwrap() > max_blue {
+                            good_set = false;
+                        }
+                    }
+                    _ => unreachable!(),
+                }
+            }
+        }
+
+        if good_set {
+            sum += id;
+        }
+    }
+    println!("{sum}");
+}
+
 fn main() {
-    day1b();
+    day2a();
 }
