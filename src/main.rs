@@ -222,4 +222,98 @@ fn day2b() {
     println!("{sum}");
 }
 
+#[allow(dead_code)]
+fn day3a() {
+    use std::{fs::File, io::Read};
+    // Sample Input:
+    //
+    // 467..114..
+    // ...*......
+    // ..35..633.
+    // ......#...
+    // 617*......
+    // .....+.58.
+    // ..592.....
+    // ......755.
+    // ...$.*....
+    // .664.598..
+    //
+    // Numbers that are adjacent to a symbol is to be added (side, top, bottom, diagona)
+
+    // let input = "467..114..\n...*......\n..35..633.\n......#...\n617*......\n.....+.58.\n..592.....\n......755.\n...$.*....\n.664.598..";
+    let mut input = String::new();
+    let _ = File::open("inputs/3.txt")
+        .unwrap()
+        .read_to_string(&mut input);
+
+    let lines = input.trim().split('\n').collect::<Vec<&str>>();
+    let mut char_arr: Vec<Vec<char>> = Default::default();
+    for line in lines {
+        char_arr.push(line.trim().chars().collect());
+    }
+
+    let mut sum = 0;
+
+    let mut adjacent = |num: u64, i: usize, start_idx: usize, end_idx: usize| {
+        for x in start_idx..end_idx + 1 {
+            if i != char_arr.len() - 1 {
+                if char_arr[i + 1][x] != '.' && !char_arr[i + 1][x].is_digit(10) {
+                    sum += num;
+                }
+            }
+            if i != 0 {
+                if char_arr[i - 1][x] != '.' && !char_arr[i - 1][x].is_digit(10) {
+                    sum += num;
+                }
+            }
+        }
+
+        if char_arr[i][end_idx] != '.' && !char_arr[i][end_idx].is_digit(10) {
+            sum += num;
+        }
+        if char_arr[i][start_idx] != '.' && !char_arr[i][start_idx].is_digit(10) {
+            sum += num;
+        }
+    };
+
+    for (i, row) in char_arr.iter().enumerate() {
+        let mut num: u64 = 0;
+
+        for (j, ch) in row.iter().enumerate() {
+            if ch.is_digit(10) {
+                num = (num * 10) + ch.to_digit(10).unwrap() as u64;
+                if j == row.len() - 1 {
+                    let start_idx: usize = if num > 99 {
+                        j - 3
+                    } else if num > 9 {
+                        j - 2
+                    } else {
+                        j - 1
+                    };
+                    let end_idx: usize = j;
+                    adjacent(num, i, start_idx, end_idx);
+                    num = 0;
+                }
+            } else if num != 0 {
+                let mut start_idx: usize = if num > 99 {
+                    j - 3
+                } else if num > 9 {
+                    j - 2
+                } else {
+                    j - 1
+                };
+                let end_idx: usize = j;
+
+                if start_idx > 0 {
+                    start_idx -= 1;
+                }
+                adjacent(num, i, start_idx, end_idx);
+                num = 0;
+            }
+        }
+    }
+
+    println!("{sum}");
+}
+
 fn main() {}
