@@ -391,4 +391,67 @@ fn day3b() {
     println!("{sum}");
 }
 
+#[allow(dead_code)]
+fn day4a() {
+    use std::{fs::File, io::Read};
+    // Sample Input:
+    // Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
+    // Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
+    // Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1
+    // Card 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83
+    // Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
+    // Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
+    //
+    // Each card has winning numbers on left of '|' and on right you have your numbers
+    // How many of right numbers match with left, you double the points of card starting with 1 (2^n)
+    // Sum of all card points is the answer
+
+    // let input = r"Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
+    //               Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
+    //               Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1
+    //               Card 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83
+    //               Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
+    //               Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11";
+    let mut input = String::new();
+    let _ = File::open("inputs/4.txt")
+        .unwrap()
+        .read_to_string(&mut input);
+
+    let mut sum = 0;
+
+    for card in input.trim().split('\n') {
+        let (_, nums) = card.trim().split_once(':').unwrap();
+        let (left, right) = nums.trim().split_once('|').unwrap();
+
+        let mut win_nums: Vec<usize> = Default::default();
+        for num in left.trim().split(' ') {
+            if num.is_empty() {
+                continue;
+            }
+            win_nums.push(num.trim().parse::<usize>().unwrap());
+        }
+
+        let mut got_nums: Vec<usize> = Default::default();
+        for num in right.trim().split(' ') {
+            if num.is_empty() {
+                continue;
+            }
+            got_nums.push(num.trim().parse::<usize>().unwrap());
+        }
+
+        let mut count = 0;
+        for num in got_nums {
+            if win_nums.contains(&num) {
+                count += 1;
+            }
+        }
+        if count == 0 {
+            continue;
+        }
+        sum += u64::pow(2, count - 1);
+    }
+
+    println!("{sum}");
+}
+
 fn main() {}
