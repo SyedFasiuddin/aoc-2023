@@ -316,4 +316,79 @@ fn day3a() {
     println!("{sum}");
 }
 
+#[allow(dead_code)]
+fn day3b() {
+    use std::collections::HashSet;
+    use std::{fs::File, io::Read};
+    // Sample Input:
+    //
+    // 467..114..
+    // ...*......
+    // ..35..633.
+    // ......#...
+    // 617*......
+    // .....+.58.
+    // ..592.....
+    // ......755.
+    // ...$.*....
+    // .664.598..
+    //
+    // * is a gear if there are two numbers adjacent to it
+    // The product of those two numbers of all gears added up is the solution
+
+    // let input = "467..114..\n...*......\n..35..633.\n......#...\n617*......\n.....+.58.\n..592.....\n......755.\n...$.*....\n.664.598..";
+    let mut input = String::new();
+    let _ = File::open("inputs/3.txt")
+        .unwrap()
+        .read_to_string(&mut input);
+
+    let lines = input.trim().split('\n').collect::<Vec<&str>>();
+    let mut char_arr: Vec<Vec<char>> = Default::default();
+    for line in lines {
+        char_arr.push(line.trim().chars().collect());
+    }
+
+    let mut sum = 0;
+
+    for (i, row) in char_arr.iter().enumerate() {
+        for (j, ch) in row.iter().enumerate() {
+            if *ch != '*' {
+                continue;
+            }
+            let mut num_set: HashSet<(usize, usize)> = HashSet::new();
+            for cr in [i - 1, i, i + 1] {
+                for mut cc in [j - 1, j, j + 1] {
+                    if cr >= char_arr.len()
+                        || cc >= char_arr[0].len()
+                        || !char_arr[cr][cc].is_ascii_digit()
+                    {
+                        continue;
+                    }
+                    while cc > 0 && char_arr[cr][cc - 1].is_ascii_digit() {
+                        cc -= 1;
+                    }
+                    num_set.insert((cr, cc));
+                }
+            }
+            if num_set.len() != 2 {
+                continue;
+            }
+
+            let mut product = 1;
+            for (cr, cc) in num_set.iter() {
+                let mut num = 0;
+                let mut c: usize = *cc;
+                while c < char_arr[0].len() && char_arr[*cr][c].is_ascii_digit() {
+                    num = (num * 10) + char_arr[*cr][c].to_digit(10).unwrap();
+                    c += 1;
+                }
+                product *= num;
+            }
+            sum += product;
+        }
+    }
+
+    println!("{sum}");
+}
+
 fn main() {}
