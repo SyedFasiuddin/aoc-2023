@@ -519,4 +519,88 @@ fn day4b() {
     println!("{}", cards.iter().sum::<u64>());
 }
 
+#[allow(dead_code)]
+fn day5a() {
+    use std::{fs::File, io::Read};
+    //     let input = r"seeds: 79 14 55 13
+    //
+    // seed-to-soil map:
+    // 50 98 2
+    // 52 50 48
+    //
+    // soil-to-fertilizer map:
+    // 0 15 37
+    // 37 52 2
+    // 39 0 15
+    //
+    // fertilizer-to-water map:
+    // 49 53 8
+    // 0 11 42
+    // 42 0 7
+    // 57 7 4
+    //
+    // water-to-light map:
+    // 88 18 7
+    // 18 25 70
+    //
+    // light-to-temperature map:
+    // 45 77 23
+    // 81 45 19
+    // 68 64 13
+    //
+    // temperature-to-humidity map:
+    // 0 69 1
+    // 1 0 69
+    //
+    // humidity-to-location map:
+    // 60 56 37
+    // 56 93 4";
+
+    let mut input = String::new();
+    let _ = File::open("inputs/5.txt")
+        .unwrap()
+        .read_to_string(&mut input);
+
+    let mut seeds: Vec<u64> = Vec::new();
+    let (_, seeds_str) = input.split('\n').nth(0).unwrap().split_once(':').unwrap();
+    seeds_str
+        .trim()
+        .split(' ')
+        .for_each(|num| seeds.push(num.parse().unwrap()));
+
+    let map_stuff: Vec<_> = input.split("\n\n").skip(1).collect();
+    for curr_map in map_stuff {
+        let (_, map_stuff) = curr_map.trim().split_once(':').unwrap();
+
+        let mut ranges: Vec<Vec<u64>> = Default::default();
+        for line in map_stuff.trim().split('\n') {
+            let mut nums: Vec<u64> = Vec::new();
+            line.trim()
+                .split(' ')
+                .for_each(|num| nums.push(num.parse().unwrap()));
+            if nums.len() != 3 {
+                panic!("Shit went wrong!");
+            }
+            ranges.push(nums);
+        }
+
+        let mut new = Vec::new();
+        for seed in &seeds {
+            let mut broke = false;
+            for range in &ranges {
+                let (dst, src, rng) = (range[0], range[1], range[2]);
+                if *seed >= src && *seed < src + rng {
+                    new.push(dst + (seed - src));
+                    broke = true;
+                }
+            }
+            if !broke {
+                new.push(*seed);
+            }
+        }
+        seeds = new;
+    }
+    println!("{}", seeds.iter().min().unwrap());
+}
+
 fn main() {}
