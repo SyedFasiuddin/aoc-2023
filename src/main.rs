@@ -709,4 +709,53 @@ fn day5b() {
     println!("{:?}", seeds[0]);
 }
 
+#[allow(dead_code)]
+fn day6a() {
+    use std::{fs::File, io::Read};
+    // Sample Input:
+    // Time:      7  15   30
+    // Distance:  9  40  200
+    //
+    // Go more distance than given distance in each race
+    // 1ms = 1mm/s speed increase
+    // find how many ways you can go more than recorded distance in that time
+
+    // let input = "Time:      7  15   30\nDistance:  9  40  200";
+    let mut input = String::new();
+    let _ = File::open("inputs/6.txt")
+        .unwrap()
+        .read_to_string(&mut input);
+
+    let (time, distance) = input.split_once('\n').unwrap();
+
+    let (_, time_str) = time.trim().split_once(':').unwrap();
+    let mut time: Vec<u64> = Vec::new();
+    time_str.trim().split(' ').for_each(|num| {
+        if !num.is_empty() {
+            time.push(num.parse().unwrap())
+        }
+    });
+
+    let (_, distance_str) = distance.trim().split_once(':').unwrap();
+    let mut distance: Vec<u64> = Vec::new();
+    distance_str.trim().split(' ').for_each(|num| {
+        if !num.is_empty() {
+            distance.push(num.parse().unwrap())
+        }
+    });
+
+    let mut product = 1;
+    for (t, d) in time.iter().zip(distance) {
+        let mut count = 0;
+        for x in 1..*t {
+            if x * (t - x) > d {
+                count += 1;
+            }
+        }
+        product *= count;
+    }
+
+    println!("{product}");
+}
+
 fn main() {}
