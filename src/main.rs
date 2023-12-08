@@ -758,4 +758,57 @@ fn day6a() {
     println!("{product}");
 }
 
+#[allow(dead_code)]
+fn day6b() {
+    use std::{fs::File, io::Read};
+    // Sample Input:
+    // Time:      7  15   30
+    // Distance:  9  40  200
+    //
+    // There are no 3 races but instead only one
+    // time: 71530ms and distance: 940200mm
+
+    // let input = "Time:      7  15   30\nDistance:  9  40  200";
+    let mut input = String::new();
+    let _ = File::open("inputs/6.txt")
+        .unwrap()
+        .read_to_string(&mut input);
+
+    let (time, distance) = input.split_once('\n').unwrap();
+
+    let (_, time_str) = time.trim().split_once(':').unwrap();
+    let mut time: u64 = 0;
+    for ch in time_str.chars() {
+        if ch.is_ascii_digit() {
+            time = time * 10 + ch.to_digit(10).unwrap() as u64;
+        }
+    }
+
+    let (_, distance_str) = distance.trim().split_once(':').unwrap();
+    let mut distance: u64 = 0;
+    for ch in distance_str.chars() {
+        if ch.is_ascii_digit() {
+            distance = distance * 10 + ch.to_digit(10).unwrap() as u64;
+        }
+    }
+
+    let mut count = 0;
+    for x in 1..time {
+        if x * (time - x) < distance {
+            count += 1;
+        } else {
+            break;
+        }
+    }
+    for x in (1..time).rev() {
+        if x * (time - x) < distance {
+            count += 1;
+        } else {
+            break;
+        }
+    }
+
+    println!("{}", time - count - 1);
+}
+
 fn main() {}
