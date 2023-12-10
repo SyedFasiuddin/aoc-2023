@@ -3,6 +3,7 @@ use std::{fs::File, io::Read};
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Hash, Copy, Clone)]
 enum Card {
+    Jack,
     Two,
     Three,
     Four,
@@ -12,7 +13,6 @@ enum Card {
     Eight,
     Nine,
     Ten,
-    Jack,
     Queen,
     King,
     Ace,
@@ -68,7 +68,7 @@ impl From<&str> for Hand {
 
         Hand {
             cards: cards.try_into().unwrap(),
-            bid: bid.parse().unwrap()
+            bid: bid.parse().unwrap(),
         }
     }
 }
@@ -79,6 +79,25 @@ impl Hand {
         for card in self.cards.iter() {
             *map.entry(*card).or_default() += 1;
         }
+
+        if let Some(&jack_count) = map.get(&Card::Jack) {
+            if let Some(max_card_not_jack) = map
+                .iter_mut()
+                .filter(|(k, _)| *k != &Card::Jack)
+                .max_by(|a, b| {
+                    if a.1 == b.1 {
+                        a.0.cmp(b.0)
+                    } else {
+                        a.1.cmp(&b.1)
+                    }
+                })
+                .map(|(c, _)| *c)
+            {
+                *map.entry(max_card_not_jack).or_insert(0) += jack_count;
+                *map.entry(Card::Jack).or_insert(0) = 0;
+            }
+        }
+
         match map.values().max().unwrap_or(&0) {
             5 => HandType::FiveOfKind,
             4 => HandType::FourOfKind,
@@ -87,13 +106,13 @@ impl Hand {
                     return HandType::FullHouse;
                 }
                 HandType::ThreeOfKind
-            },
+            }
             2 => {
                 if map.values().filter(|&&v| v == 2).count() == 2 {
                     return HandType::TwoPair;
                 }
                 HandType::OnePair
-            },
+            }
             1 => HandType::HighCard,
             _ => unreachable!(),
         }
@@ -116,8 +135,7 @@ impl Ord for Hand {
     }
 }
 
-#[allow(dead_code)]
-fn day7a() {
+fn main() {
     // let input = "32T3K 765\nT55J5 684\nKK677 28\nKTJJT 220\nQQQJA 483";
     let mut input = String::new();
     let _ = File::open("inputs/7.txt")
@@ -137,5 +155,3 @@ fn day7a() {
 
     println!("{product:?}");
 }
-
-fn main() {}
