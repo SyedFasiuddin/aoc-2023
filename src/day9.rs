@@ -37,16 +37,19 @@ fn main() {
                 should_continue = false;
             }
 
-            if let Some(val) = tmp.pop() {
-                tmp.push(val);
-                last.push(val);
-            }
+            last.insert(0, tmp[0]);
 
             diff.clear();
             std::mem::swap(&mut diff, &mut tmp);
             tmp.clear();
         }
-        sum += hist.pop().unwrap() + last.iter().sum::<i64>();
+
+        let mut s: i64 = 0;
+        for num in last.iter().skip(1) {
+            s = num - s;
+        }
+        s = hist[0] - s;
+        sum += s;
     }
 
     println!("{}", sum);
